@@ -1,7 +1,6 @@
 import pyautogui, pytesseract, pyperclip, re
 from keyboard import is_pressed
 from time import sleep
-from PIL import Image
 from os import remove, getenv
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -11,7 +10,6 @@ load_dotenv()
 
 # Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract' - from https://pypi.org/project/pytesseract/
 pytesseract.pytesseract.tesseract_cmd = getenv("TESSERACT_CMD")
-# openai.api_key = getenv("OPENAI_API_KEY")
 
 client = OpenAI(api_key=getenv("OPENAI_API_KEY"))
 
@@ -76,15 +74,18 @@ except FileNotFoundError:
 while True:
     print("Press F10 when you want to take a screenshot.")
     waitForPress("F10")
+    # Take screenshot and OCR the text from it
     img = pyautogui.screenshot(region=position)
-
     txt = pytesseract.image_to_string(img)
+
+    # Strip extra whitespace/newlines and remove unnecessary text
     txt = txt.strip().replace("\n", "")
     txt = re.sub(
         r"for \$?(200|400|600|800|1000)|bonus round", " ", txt, flags=re.IGNORECASE
     )
     print(f"Got text from image:\n{txt}")
 
+    # Make a request to ChatGPT for the answer
     print("Making ChatGPT Request")
     resp = client.responses.create(
         model="gpt-5-nano",
@@ -93,6 +94,6 @@ while True:
     )
 
     output = resp.output_text
-    # Output response in bold
+    # Output response in bold and copy to clipboard
     print(f"\033[1m{output}\033[0m \nResponse copied to clipboard")
     pyperclip.copy(output)
