@@ -8,8 +8,6 @@ from dotenv import load_dotenv
 # Dotenv
 load_dotenv()
 
-print(getenv("TESSERACT_CMD"))
-
 # Pytesseract setup
 # Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract' - from https://pypi.org/project/pytesseract/
 pytesseract.pytesseract.tesseract_cmd = getenv("TESSERACT_CMD")
@@ -49,9 +47,11 @@ def newPos():
     height = bottomRight[1] - topLeft[1]
 
     # Save the new position data to data.txt
+    global position
     position = (topLeft[0], topLeft[1], width, height)
     with open("data/data.txt", "w") as f:
         f.writelines([f"{str(num)}\n" for num in position])
+    print(f"Saved new position data: {position}")
 
 
 # Check if there is saved positions from data.txt
@@ -77,5 +77,7 @@ while True:
     waitForPress("F10")
     img = pyautogui.screenshot("data/screenshot.png", region=position)
 
-    print(pytesseract.image_to_string("data/screenshot.png"))
+    txt = pytesseract.image_to_string("data/screenshot.png")
+    txt = txt.strip().replace("\n", "")
+    print(f"Got text from image:\n{txt}")
     # remove("data/screenshot.png")
