@@ -1,7 +1,7 @@
 import pyautogui, pytesseract, pyperclip, re
 from keyboard import is_pressed
 from time import sleep
-from os import remove, getenv
+from os import getenv
 from dotenv import load_dotenv
 from openai import OpenAI
 
@@ -79,9 +79,9 @@ while True:
     txt = pytesseract.image_to_string(img)
 
     # Strip extra whitespace/newlines and remove unnecessary text
-    txt = txt.strip().replace("\n", "")
+    txt = txt.strip().replace("\n", " ")
     txt = re.sub(
-        r"for \$?(200|400|600|800|1000)|bonus round", " ", txt, flags=re.IGNORECASE
+        r"for \$?(200|400|600|800|1000)|bonus round", ":", txt, flags=re.IGNORECASE
     )
     print(f"Got text from image:\n{txt}")
 
@@ -89,7 +89,7 @@ while True:
     print("Making ChatGPT Request")
     resp = client.responses.create(
         model="gpt-5-nano",
-        instructions="Answer with only the correct trivia answer.",
+        instructions="Answer with only the correct trivia answer. Keep answers as short as possible.",
         input=txt,
     )
 
