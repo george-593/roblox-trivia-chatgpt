@@ -76,12 +76,11 @@ except FileNotFoundError:
 while True:
     print("Press F10 when you want to take a screenshot.")
     waitForPress("F10")
-    img = pyautogui.screenshot("data/screenshot.png", region=position)
+    img = pyautogui.screenshot(region=position)
 
-    txt = pytesseract.image_to_string("data/screenshot.png")
+    txt = pytesseract.image_to_string(img)
     txt = txt.strip().replace("\n", "")
     print(f"Got text from image:\n{txt}")
-    remove("data/screenshot.png")
 
     print("Making ChatGPT Request")
     resp = client.responses.create(
