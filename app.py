@@ -80,6 +80,9 @@ while True:
 
     txt = pytesseract.image_to_string(img)
     txt = txt.strip().replace("\n", "")
+    txt = re.sub(
+        r"for \$?(200|400|600|800|1000)|bonus round", " ", txt, flags=re.IGNORECASE
+    )
     print(f"Got text from image:\n{txt}")
 
     print("Making ChatGPT Request")
