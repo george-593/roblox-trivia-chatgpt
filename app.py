@@ -2,7 +2,19 @@ import pyautogui, pytesseract
 from keyboard import is_pressed
 from time import sleep
 from PIL import Image
-from os import remove
+from os import remove, getenv
+from dotenv import load_dotenv
+
+# Dotenv
+load_dotenv()
+
+print(getenv("TESSERACT_CMD"))
+
+# Pytesseract setup
+# Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract' - from https://pypi.org/project/pytesseract/
+pytesseract.pytesseract.tesseract_cmd = getenv("TESSERACT_CMD")
+
+# ChatGPT API Setup
 
 # Position of the text to capture
 # Four-integer tuple of the left, top, width, and height
@@ -65,4 +77,5 @@ while True:
     waitForPress("F10")
     img = pyautogui.screenshot("data/screenshot.png", region=position)
 
+    print(pytesseract.image_to_string("data/screenshot.png"))
     # remove("data/screenshot.png")
