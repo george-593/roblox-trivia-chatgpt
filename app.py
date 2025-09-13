@@ -4,15 +4,16 @@ from time import sleep
 from PIL import Image
 from os import remove, getenv
 from dotenv import load_dotenv
+from openai import OpenAI
 
 # Dotenv
 load_dotenv()
 
-# Pytesseract setup
 # Example tesseract_cmd = r'C:\Program Files (x86)\Tesseract-OCR\tesseract' - from https://pypi.org/project/pytesseract/
 pytesseract.pytesseract.tesseract_cmd = getenv("TESSERACT_CMD")
+# openai.api_key = getenv("OPENAI_API_KEY")
 
-# ChatGPT API Setup
+client = OpenAI(api_key=getenv("OPENAI_API_KEY"))
 
 # Position of the text to capture
 # Four-integer tuple of the left, top, width, and height
@@ -80,4 +81,13 @@ while True:
     txt = pytesseract.image_to_string("data/screenshot.png")
     txt = txt.strip().replace("\n", "")
     print(f"Got text from image:\n{txt}")
-    # remove("data/screenshot.png")
+    remove("data/screenshot.png")
+
+    print("Making ChatGPT Request")
+    resp = client.responses.create(
+        model="gpt-5-nano",
+        instructions="You are a trivia answering system. Always respond with only the correct answer. Do not include explanations, punctuation, or extra text.",
+        input=txt,
+    )
+
+    print(resp.output_text)
