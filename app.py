@@ -1,4 +1,4 @@
-import pyautogui, pytesseract
+import pyautogui, pytesseract, pyperclip
 from keyboard import is_pressed
 from time import sleep
 from PIL import Image
@@ -89,4 +89,7 @@ while True:
         input=txt,
     )
 
-    print(resp.output_text)
+    output = resp.output_text
+    # Output response in bold
+    print(f"\033[1m{output}\033[0m \nResponse copied to clipboard")
+    pyperclip.copy(output)
