@@ -1,4 +1,4 @@
-import pyautogui, pytesseract, pyperclip
+import pyautogui, pytesseract, pyperclip, re
 from keyboard import is_pressed
 from time import sleep
 from PIL import Image
@@ -85,7 +85,7 @@ while True:
     print("Making ChatGPT Request")
     resp = client.responses.create(
         model="gpt-5-nano",
-        instructions="You are a trivia answering system. Always respond with only the correct answer. Do not include explanations, punctuation, or extra text.",
+        instructions="Answer with only the correct trivia answer.",
         input=txt,
     )
 
