@@ -1,4 +1,4 @@
-import pyautogui, pytesseract, pyperclip, re, json, ollama
+import pyautogui, pytesseract, pyperclip, re, json, ollama, keyboard
 from keyboard import is_pressed
 from time import sleep
 from os import getenv
@@ -22,15 +22,6 @@ prompt = ""
 
 aiType = ""
 localModel = ""
-
-
-# Helper function to wait for a keypress
-def waitForPress(key):
-    while True:
-        if is_pressed(key):
-            return
-        else:
-            sleep(0.1)
 
 
 def useChatGPT(txt):
@@ -79,7 +70,7 @@ except FileNotFoundError:
 # Main loop
 while True:
     print("Press F10 when you want to take a screenshot.")
-    waitForPress("F10")
+    keyboard.wait("F10")
     # Take screenshot and OCR the text from it
     img = pyautogui.screenshot(region=position)
     txt = pytesseract.image_to_string(img)
