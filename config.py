@@ -42,6 +42,10 @@ def gameConfig():
     if gamePrompt == "":
         gamePrompt = "Answer with only the correct trivia answer. Keep answers as short as possible."
 
+    customRegex = input(
+        "Enter a custom regex formula to process OCR text with (optional): "
+    )
+
     # Get the positions from the user
     print("Press F10 when your mouse is in the top-left corner of the text to capture")
     keyboard.wait("F10")
@@ -59,6 +63,7 @@ def gameConfig():
 
     data["games"][gameName] = {
         "prompt": gamePrompt,
+        "regex": customRegex,
         "x": topLeft[0],
         "y": topLeft[1],
         "width": width,

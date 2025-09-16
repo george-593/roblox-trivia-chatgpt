@@ -20,6 +20,7 @@ prompt = ""
 
 aiType = ""
 localModel = ""
+regex = r""
 
 
 def useChatGPT(txt):
@@ -57,6 +58,7 @@ try:
 
         position = (game["x"], game["y"], game["width"], game["height"])
         prompt = game["prompt"]
+        regex = game["regex"]
 
         # Load global data
         aiType = data["global"]["aiType"]
@@ -76,9 +78,7 @@ while True:
     # Strip extra whitespace/newlines and remove unnecessary text
     txt = txt.strip().replace("\n", " ")
     # TODO: ADD REGEX CUSTOMIZATION
-    txt = re.sub(
-        r"for \$?(200|400|600|800|1000)|bonus round", ":", txt, flags=re.IGNORECASE
-    )
+    txt = re.sub(regex, txt, flags=re.IGNORECASE)
     print(f"Got text from image:\n{txt}")
 
     if aiType == "local":
