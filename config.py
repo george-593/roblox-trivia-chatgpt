@@ -1,4 +1,4 @@
-import pyautogui, keyboard, json
+import pyautogui, keyboard, json, ollama
 
 
 def loadFile():
@@ -9,6 +9,14 @@ def loadFile():
         # Create the file
         f = open("data/config.json", "w+")
     return f
+
+
+def writeFile(f, data):
+    # Close the file and re-open in write mode so we can clear previous data and overwrite with new data
+    f.close()
+    f = open("data/config.json", "w")
+    json.dump(data, f)
+    f.close()
 
 
 def gameConfig():
@@ -56,15 +64,44 @@ def gameConfig():
         "width": width,
         "height": height,
     }
-    # Close the file and re-open in write mode so we can clear previous data and overwrite with new data
-    f.close()
-    f = open("data/config.json", "w")
-    json.dump(data, f)
-    f.close()
+    writeFile(f, data)
 
 
 def globalConfig():
-    pass
+    f = loadFile()
+    try:
+        data = json.load(f)
+        print(f"Current global data:\n{data['global']}")
+    except json.JSONDecodeError:
+        data = {"games": {}, "global": {}}
+        print("Unable to load current config")
+
+    aiType = input("Enter the type of AI to be used (local/openai): ")
+    print(aiType)
+
+    if aiType != "local" and aiType != "openai":
+        print("Invalid AI type entered")
+        exit()
+
+    localModel = ""
+    if aiType == "local":
+        print(
+            "Note: Using local models requires ollama to be installed, running and a model to be already downloaded.\nDownload ollama here: https://ollama.com/"
+        )
+        print("Available models: ", end="")
+        availModels = []
+        for m in ollama.list().models:
+            print(m.model)
+            availModels.append(m.model)
+        localModel = input("Enter local model to use: ")
+
+        if localModel not in availModels:
+            print("Invalid  model provided.")
+            exit()
+
+    data["global"] = {"aiType": aiType, "localModel": localModel}
+
+    writeFile(f, data)
 
 
 def decideConfig():

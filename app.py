@@ -1,4 +1,4 @@
-import pyautogui, pytesseract, pyperclip, re, json
+import pyautogui, pytesseract, pyperclip, re, json, ollama
 from keyboard import is_pressed
 from time import sleep
 from os import getenv
@@ -20,6 +20,9 @@ client = OpenAI(api_key=getenv("OPENAI_API_KEY"))
 position = ()
 prompt = ""
 
+aiType = ""
+localModel = ""
+
 
 # Helper function to wait for a keypress
 def waitForPress(key):
@@ -30,10 +33,28 @@ def waitForPress(key):
             sleep(0.1)
 
 
+def useChatGPT(txt):
+    # Make a request to ChatGPT for the answer
+    print("Making ChatGPT Request")
+    resp = client.responses.create(
+        model="gpt-5-nano",
+        instructions=prompt,
+        input=txt,
+    )
+    return resp.output_text
+
+
+def useLocalLLM(txt):
+    resp = ollama.generate(model=localModel, prompt=f"{prompt}\n\nUser: {txt}")
+    return resp.response.strip().replace("\n", " ")
+
+
 # Load saved config data
 try:
     with open("data/config.json", "r") as f:
         data = json.load(f)
+
+        # Load game dataq
         gameNames = list(data["games"].keys())
         selected = input(
             f"Please select the game to load, Available options: {gameNames}\n"
@@ -46,8 +67,11 @@ try:
             exit()
 
         position = (game["x"], game["y"], game["width"], game["height"])
-        print(position)
         prompt = game["prompt"]
+
+        # Load global data
+        aiType = data["global"]["aiType"]
+        localModel = data["global"]["localModel"]
 except FileNotFoundError:
     print("No configuration found, entering config mode.")
     config.decideConfig()
@@ -62,20 +86,17 @@ while True:
 
     # Strip extra whitespace/newlines and remove unnecessary text
     txt = txt.strip().replace("\n", " ")
+    # TODO: ADD REGEX CUSTOMIZATION
     txt = re.sub(
         r"for \$?(200|400|600|800|1000)|bonus round", ":", txt, flags=re.IGNORECASE
     )
     print(f"Got text from image:\n{txt}")
 
-    # Make a request to ChatGPT for the answer
-    print("Making ChatGPT Request")
-    resp = client.responses.create(
-        model="gpt-5-nano",
-        instructions=prompt,
-        input=txt,
-    )
+    if aiType == "local":
+        output = useLocalLLM(txt)
+    else:
+        output = useChatGPT(txt)
 
-    output = resp.output_text
     # Output response in bold and copy to clipboard
     print(f"\033[1m{output}\033[0m \nResponse copied to clipboard")
     pyperclip.copy(output)
