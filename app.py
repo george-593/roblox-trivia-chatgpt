@@ -1,6 +1,4 @@
 import pyautogui, pytesseract, pyperclip, re, json, ollama, keyboard
-from keyboard import is_pressed
-from time import sleep
 from os import getenv
 from dotenv import load_dotenv
 from openai import OpenAI
