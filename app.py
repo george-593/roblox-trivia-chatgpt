@@ -77,8 +77,8 @@ while True:
 
     # Strip extra whitespace/newlines and remove unnecessary text
     txt = txt.strip().replace("\n", " ")
-    # TODO: ADD REGEX CUSTOMIZATION
-    txt = re.sub(regex, txt, flags=re.IGNORECASE)
+    if regex:
+        txt = re.sub(regex, txt, flags=re.IGNORECASE)
     print(f"Got text from image:\n{txt}")
 
     if aiType == "local":
