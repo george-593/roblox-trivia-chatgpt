@@ -1,5 +1,4 @@
 import pyautogui, keyboard, json
-from time import sleep
 
 
 def loadFile():
